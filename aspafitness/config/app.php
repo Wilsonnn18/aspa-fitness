@@ -37,3 +37,12 @@ function require_login(?string $role = null): void
         redirect('/auth/login.php');
     }
 }
+
+function user_has_workout_access(mysqli $conn, int $userId): bool
+{
+    $paymentStmt = $conn->prepare('SELECT id FROM payments WHERE user_id = ? AND payment_status = ? LIMIT 1');
+    $paymentStatus = 'completed';
+    $paymentStmt->bind_param('is', $userId, $paymentStatus);
+    $paymentStmt->execute();
+    return $paymentStmt->get_result()->num_rows > 0;
+}

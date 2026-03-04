@@ -19,15 +19,8 @@ if (!$plan) {
 
 $userId = (int)$_SESSION['user_id'];
 $amount = (float)$plan['price'];
-$startDate = date('Y-m-d');
-$endDate = date('Y-m-d', strtotime('+' . (int)$plan['duration'] . ' days'));
-$subStatus = 'active';
 $paymentStatus = 'completed';
 $txn = uniqid('txn_');
-
-$stmt = $conn->prepare('INSERT INTO subscriptions (user_id, plan_id, start_date, end_date, status) VALUES (?,?,?,?,?)');
-$stmt->bind_param('iisss', $userId, $planId, $startDate, $endDate, $subStatus);
-$stmt->execute();
 
 $stmt = $conn->prepare('INSERT INTO payments (user_id, plan_id, amount, payment_status, transaction_id) VALUES (?,?,?,?,?)');
 $stmt->bind_param('iidss', $userId, $planId, $amount, $paymentStatus, $txn);

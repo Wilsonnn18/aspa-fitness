@@ -3,21 +3,36 @@
 require_once __DIR__ . '/../config/app.php';
 require_login('admin');
 
+$goalColumn = $conn->query("SHOW COLUMNS FROM workout_plans LIKE 'goal'");
+if ($goalColumn && $goalColumn->num_rows === 0) {
+    $conn->query("ALTER TABLE workout_plans ADD COLUMN goal ENUM('weight_loss','weight_gain','lean_muscle') DEFAULT 'weight_loss'");
+}
+
+$success = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = (int)($_POST['id'] ?? 0);
     $title = trim($_POST['title'] ?? '');
     $desc = trim($_POST['description'] ?? '');
     $level = $_POST['level'] ?? 'beginner';
+    $goal = $_POST['goal'] ?? 'weight_loss';
+
+    $allowedLevels = ['beginner', 'intermediate', 'advanced'];
+    $allowedGoals = ['weight_loss', 'weight_gain', 'lean_muscle'];
+
+    if (!in_array($level, $allowedLevels, true)) $level = 'beginner';
+    if (!in_array($goal, $allowedGoals, true)) $goal = 'weight_loss';
 
     if ($title !== '') {
         if ($id > 0) {
-            $stmt = $conn->prepare('UPDATE workout_plans SET title = ?, description = ?, level = ? WHERE id = ?');
-            $stmt->bind_param('sssi', $title, $desc, $level, $id);
+            $stmt = $conn->prepare('UPDATE workout_plans SET title = ?, description = ?, level = ?, goal = ? WHERE id = ?');
+            $stmt->bind_param('ssssi', $title, $desc, $level, $goal, $id);
             $stmt->execute();
+            $success = 'Workout plan updated.';
         } else {
-            $stmt = $conn->prepare('INSERT INTO workout_plans (title,description,level) VALUES (?,?,?)');
-            $stmt->bind_param('sss', $title, $desc, $level);
+            $stmt = $conn->prepare('INSERT INTO workout_plans (title,description,level,goal) VALUES (?,?,?,?)');
+            $stmt->bind_param('ssss', $title, $desc, $level, $goal);
             $stmt->execute();
+            $success = 'Workout plan created.';
         }
     }
 }
@@ -30,7 +45,7 @@ if ($deleteId > 0) {
 }
 
 $plans = [];
-$res = $conn->query('SELECT * FROM workout_plans');
+$res = $conn->query('SELECT * FROM workout_plans ORDER BY id DESC');
 if ($res) {
     while ($row = $res->fetch_assoc()) {
         $plans[] = $row;
@@ -38,48 +53,121 @@ if ($res) {
 }
 ?>
 <?php include __DIR__ . '/../includes/header.php'; ?>
-<h2>Manage Workout Plans</h2>
-<form method="post" class="mb-4">
-    <input type="hidden" name="id" id="wp-id">
-    <div class="form-row">
-        <div class="col"><input class="form-control" name="title" id="wp-title" placeholder="Title" required></div>
-        <div class="col">
-            <select name="level" id="wp-level" class="form-control">
-                <option value="beginner">Beginner</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
-            </select>
+
+<section class="page-section">
+    <div class="page-header">
+        <div>
+            <h2>Manage Workout Plans</h2>
+            <p class="page-header-sub">Create and edit fitness programs</p>
         </div>
     </div>
-    <div class="form-group mt-2">
-        <textarea class="form-control" name="description" id="wp-desc" placeholder="Description"></textarea>
+
+    <?php if ($success): ?>
+        <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
+    <?php endif; ?>
+
+    <!-- Create / Edit Form -->
+    <div class="card mb-4">
+        <div class="card-header" id="workout-form-heading">Add New Workout Plan</div>
+        <div class="card-body">
+            <form method="post">
+                <input type="hidden" name="id" id="wp-id">
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label class="form-label">Title</label>
+                        <input class="form-control" name="title" id="wp-title" placeholder="Plan Title" required>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="form-label">Level</label>
+                        <select name="level" id="wp-level" class="form-control">
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="form-label">Goal</label>
+                        <select name="goal" id="wp-goal" class="form-control">
+                            <option value="weight_loss">Weight Loss</option>
+                            <option value="weight_gain">Weight Gain</option>
+                            <option value="lean_muscle">Lean Muscle</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" name="description" id="wp-desc" rows="4" placeholder="Workout plan details..."></textarea>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary" type="submit">Save Plan</button>
+                    <button class="btn btn-secondary" type="reset" id="wp-reset-btn">Clear Form</button>
+                </div>
+            </form>
+        </div>
     </div>
-    <button class="btn btn-primary" type="submit">Save</button>
-</form>
-<table class="table table-bordered">
-    <thead><tr><th>ID</th><th>Title</th><th>Level</th><th>Description</th><th>Action</th></tr></thead>
-    <tbody>
-    <?php foreach ($plans as $p): ?>
-        <tr data-id="<?= $p['id'] ?>" data-title="<?= htmlspecialchars($p['title'], ENT_QUOTES) ?>" data-level="<?= $p['level'] ?>" data-desc="<?= htmlspecialchars($p['description'], ENT_QUOTES) ?>">
-            <td><?= $p['id'] ?></td>
-            <td><?= htmlspecialchars($p['title']) ?></td>
-            <td><?= $p['level'] ?></td>
-            <td><?= htmlspecialchars($p['description']) ?></td>
-            <td><a class="btn btn-sm btn-secondary edit-wp" href="#">Edit</a> <a class="btn btn-sm btn-danger" href="?delete=<?= $p['id'] ?>" onclick="return confirm('Delete?');">Delete</a></td>
-        </tr>
-    <?php endforeach; ?>
-    </tbody>
-</table>
+
+    <!-- Plans Table -->
+    <div class="card">
+        <div class="card-header">Existing Workout Plans (<?= count($plans) ?>)</div>
+        <div class="card-body p-0">
+            <?php if (empty($plans)): ?>
+                <p class="text-muted p-3 mb-0">No workout plans yet. Create one above.</p>
+            <?php else: ?>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Level</th>
+                                <th>Goal</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($plans as $p): ?>
+                            <tr data-id="<?= $p['id'] ?>"
+                                data-title="<?= htmlspecialchars($p['title'], ENT_QUOTES) ?>"
+                                data-level="<?= htmlspecialchars($p['level']) ?>"
+                                data-goal="<?= htmlspecialchars($p['goal']) ?>"
+                                data-desc="<?= htmlspecialchars($p['description'], ENT_QUOTES) ?>">
+                                <td><strong><?= htmlspecialchars($p['title']) ?></strong></td>
+                                <td>
+                                    <span class="status-pill inactive"><?= ucfirst(htmlspecialchars($p['level'])) ?></span>
+                                </td>
+                                <td><?= htmlspecialchars(ucwords(str_replace('_', ' ', $p['goal']))) ?></td>
+                                <td>
+                                    <a class="btn btn-sm btn-secondary edit-wp" href="#">Edit</a>
+                                    <a class="btn btn-sm btn-danger" href="?delete=<?= $p['id'] ?>" onclick="return confirm('Delete this plan?');">Delete</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</section>
+
 <script>
-document.querySelectorAll('.edit-wp').forEach(function (el) {
-    el.addEventListener('click', function (e) {
+document.querySelectorAll('.edit-wp').forEach(function(el) {
+    el.addEventListener('click', function(e) {
         e.preventDefault();
         var tr = this.closest('tr');
         document.getElementById('wp-id').value = tr.dataset.id;
         document.getElementById('wp-title').value = tr.dataset.title;
         document.getElementById('wp-level').value = tr.dataset.level;
+        document.getElementById('wp-goal').value = tr.dataset.goal;
         document.getElementById('wp-desc').value = tr.dataset.desc;
+        document.getElementById('workout-form-heading').textContent = 'Edit Workout Plan';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 });
+
+document.getElementById('wp-reset-btn').addEventListener('click', function() {
+    document.getElementById('wp-id').value = '';
+    document.getElementById('workout-form-heading').textContent = 'Add New Workout Plan';
+});
 </script>
+
 <?php include __DIR__ . '/../includes/footer.php'; ?>

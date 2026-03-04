@@ -19,10 +19,11 @@ require_once __DIR__ . '/config/app.php';
         </div>
         <div class="hero-image-wrap">
             <img
-                src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1200&q=80"
-                alt="Gym training session"
+                src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=80"
+                alt="Male bodybuilder training"
                 class="hero-image"
             >
+            
         </div>
     </section>
 
@@ -35,27 +36,20 @@ require_once __DIR__ . '/config/app.php';
         </div>
     </section>
 
-    <section class="plans-section">
-        <h2>Workout Plans</h2>
-        <p class="plans-sub">Choose a plan and stay consistent with your fitness journey.</p>
-        <div class="plan-grid">
-            <article class="plan-card">
-                <h3>Starter Plan</h3>
-                <p>3 days/week full-body program focused on technique and consistency.</p>
-                <span class="plan-tag">Beginner</span>
-            </article>
-            <article class="plan-card">
-                <h3>Strength Builder</h3>
-                <p>4 days/week split with progressive overload for faster strength gains.</p>
-                <span class="plan-tag">Intermediate</span>
-            </article>
-            <article class="plan-card">
-                <h3>Lean Athlete</h3>
-                <p>5 days/week hybrid routine combining weights, HIIT, and mobility work.</p>
-                <span class="plan-tag">Advanced</span>
-            </article>
-        </div>
+    <section class="landing-description">
+        <h2><br>Your journey starts from here</h2>
+        <p>
+            At ASPA Fitness, we believe fitness is more than just lifting weights. It is about building confidence,
+            discipline, and a healthier lifestyle. Join us today and take the first step toward becoming a stronger
+            version of yourself.
+
+        </p>
     </section>
 </div>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>
+
+
+
+
+

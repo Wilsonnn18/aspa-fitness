@@ -49,11 +49,11 @@ aspa-fitness/
    - Import `database/aspa_fitness.sql` or paste its contents.
 4. (Optional) Create an admin user manually:
    ```sql
-   INSERT INTO users (name,email,password,role) VALUES (
-       'Admin','admin@example.com','<hash>','admin');
+   INSERT INTO admin (name,email,password) VALUES (
+       'Admin','admin@example.com','<hash>');
    ```
    - Use PHP's `password_hash()` helper to generate `<hash>`.
-   - Or register via the registration form then update the role to `admin`.
+   - Admin accounts are stored in the `admin` table.
 
 ## Configuration
 - Edit `config/db.php` if your MySQL credentials are different.
@@ -62,14 +62,14 @@ aspa-fitness/
 1. Place the project folder inside `htdocs` (for XAMPP) or your web root. Avoid spaces in the folder name – e.g. use `aspa-fitness` rather than `aspa fitness`.
 2. Visit `http://localhost/aspa-fitness/` (or adjust to match your folder name) to start.
 3. Register as a new user or login with an admin account.
-4. Navigate between user/admin dashboards to manage plans, workouts, subscriptions, and payments.
+4. Navigate between user/admin dashboards to manage plans, workouts, memberships, and payments.
 
 ## Features
 - Secure password hashing (`password_hash` / `password_verify`).
 - Role-based access control via sessions.
 - User registration, login/logout, dashboard.
 - Membership plan browsing and simulated purchases.
-- Subscription status view.
+- Membership status view.
 - Workout plan listing.
 - Admin CRUD for users, membership plans, workout plans, payment records.
 
