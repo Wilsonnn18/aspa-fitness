@@ -29,9 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Incorrect password.';
         } else {
             // User login uses users table only
-            $userStmt = $conn->prepare('SELECT id,name,email,password FROM users WHERE email = ? AND role = ? LIMIT 1');
-            $userRole = 'user';
-            $userStmt->bind_param('ss', $email, $userRole);
+            $userStmt = $conn->prepare('SELECT id,name,email,password FROM users WHERE email = ? LIMIT 1');
+            $userStmt->bind_param('s', $email);
             $userStmt->execute();
             $userResult = $userStmt->get_result();
 

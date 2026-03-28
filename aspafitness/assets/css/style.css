@@ -69,7 +69,7 @@ a {
 }
 
 a:hover {
-    color: #ff86a0;
+    color: var(--accent-3);
     text-decoration: none;
 }
 
@@ -142,8 +142,8 @@ hr {
 
 .navbar-light .navbar-nav .nav-link:hover,
 .navbar-light .navbar-nav .nav-link:focus {
-    color: #fff;
-    background: var(--accent-soft);
+    color: var(--muted);
+    background: transparent;
 }
 
 .navbar-nav .nav-link.nav-active {
@@ -191,7 +191,7 @@ hr {
 
 /* ─── Section / Page wrapper ─────────────────────────────── */
 .page-section {
-    animation: riseIn 0.6s ease both;
+    opacity: 1;
 }
 
 /* ─── Cards ──────────────────────────────────────────────── */
@@ -241,12 +241,11 @@ hr {
     box-shadow: var(--shadow);
     position: relative;
     overflow: hidden;
-    transition: transform var(--transition), box-shadow var(--transition);
+    transition: box-shadow var(--transition);
 }
 
 .stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow);
 }
 
 .stat-card::before {
@@ -328,7 +327,7 @@ hr {
 }
 
 .table-hover tbody tr:hover {
-    background: rgba(220, 20, 60, 0.09);
+    background: transparent;
 }
 
 .table-light {
@@ -549,10 +548,10 @@ textarea.form-control {
 
 .btn-primary:hover,
 .btn-primary:focus {
-    background: var(--accent-2);
-    border-color: var(--accent-2);
+    background: var(--accent);
+    border-color: var(--accent);
     color: #fff;
-    box-shadow: 0 4px 14px rgba(220, 20, 60, 0.38);
+    box-shadow: none;
 }
 
 .btn-success {
@@ -563,10 +562,10 @@ textarea.form-control {
 
 .btn-success:hover,
 .btn-success:focus {
-    background: #178045;
-    border-color: #178045;
+    background: var(--success);
+    border-color: var(--success);
     color: #fff;
-    box-shadow: 0 4px 12px rgba(31, 158, 88, 0.35);
+    box-shadow: none;
 }
 
 .btn-danger {
@@ -577,8 +576,8 @@ textarea.form-control {
 
 .btn-danger:hover,
 .btn-danger:focus {
-    background: #880c24;
-    border-color: #880c24;
+    background: #b01030;
+    border-color: #b01030;
     color: #fff;
 }
 
@@ -590,9 +589,9 @@ textarea.form-control {
 
 .btn-secondary:hover,
 .btn-secondary:focus {
-    background: #2e1e27;
-    border-color: var(--accent);
-    color: #fff;
+    background: var(--surface-3);
+    border-color: var(--line);
+    color: var(--text);
 }
 
 .btn-warning {
@@ -604,8 +603,8 @@ textarea.form-control {
 
 .btn-warning:hover,
 .btn-warning:focus {
-    background: #c2375e;
-    border-color: #c2375e;
+    background: #d94f72;
+    border-color: #d94f72;
     color: #fff;
 }
 
@@ -617,8 +616,8 @@ textarea.form-control {
 
 .btn-outline-dark:hover,
 .btn-outline-dark:focus {
-    background: var(--accent);
-    border-color: var(--accent);
+    background: transparent;
+    border-color: var(--line);
     color: #fff;
 }
 
@@ -629,8 +628,8 @@ textarea.form-control {
 }
 
 .btn-dark:hover {
-    background: rgba(0, 0, 0, 0.8);
-    border-color: var(--muted-2);
+    background: rgba(0, 0, 0, 0.5);
+    border-color: var(--line);
     color: #fff;
 }
 
@@ -685,7 +684,7 @@ textarea.form-control {
 
 /* ─── Landing Page ───────────────────────────────────────── */
 .landing-page {
-    animation: riseIn 0.8s ease both;
+    opacity: 1;
 }
 
 .hero-section {
@@ -759,13 +758,12 @@ textarea.form-control {
     height: 100%;
     min-height: 340px;
     object-fit: cover;
-    transform: scale(1.03);
-    transition: transform 0.6s ease;
+    transition: opacity 0.2s ease;
     display: block;
 }
 
 .hero-image:hover {
-    transform: scale(1.08);
+    opacity: 1;
 }
 
 /* Gallery */
@@ -793,13 +791,12 @@ textarea.form-control {
     border-radius: var(--radius);
     border: 1px solid var(--line);
     box-shadow: var(--shadow);
-    transition: transform 0.35s ease, box-shadow 0.35s ease;
+    transition: box-shadow 0.35s ease;
     display: block;
 }
 
 .gallery-grid img:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow);
 }
 
 /* Landing description */
@@ -839,13 +836,12 @@ textarea.form-control {
     border-radius: var(--radius);
     padding: 18px;
     box-shadow: var(--shadow-sm);
-    transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+    transition: border-color var(--transition), box-shadow var(--transition);
 }
 
 .plan-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--accent);
-    box-shadow: var(--shadow);
+    border-color: var(--line);
+    box-shadow: var(--shadow-sm);
 }
 
 .plan-card h3 {
@@ -927,7 +923,7 @@ textarea.form-control {
 
 /* ─── User Dashboard ─────────────────────────────────────── */
 .user-dashboard {
-    animation: riseIn 0.7s ease both;
+    opacity: 1;
 }
 
 .dashboard-hero {
@@ -967,13 +963,12 @@ textarea.form-control {
     border-radius: var(--radius-lg);
     padding: 20px 20px 18px;
     box-shadow: var(--shadow);
-    transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    transition: box-shadow var(--transition), border-color var(--transition);
 }
 
 .dashboard-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
-    border-color: #5a2c39;
+    box-shadow: var(--shadow);
+    border-color: var(--line);
 }
 
 .dashboard-card::before {
@@ -1032,7 +1027,7 @@ textarea.form-control {
 
 /* ─── Admin Dashboard ────────────────────────────────────── */
 .admin-dashboard {
-    animation: riseIn 0.7s ease both;
+    opacity: 1;
 }
 
 .admin-nav-grid {
@@ -1048,17 +1043,16 @@ textarea.form-control {
     border-radius: var(--radius-lg);
     padding: 20px 22px;
     box-shadow: var(--shadow-sm);
-    transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    transition: box-shadow var(--transition), border-color var(--transition);
     display: block;
     text-decoration: none !important;
     color: var(--text) !important;
 }
 
 .admin-nav-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-    border-color: var(--accent);
-    color: #fff !important;
+    box-shadow: var(--shadow-sm);
+    border-color: var(--line);
+    color: var(--text) !important;
 }
 
 .admin-nav-card-icon {
@@ -1086,14 +1080,13 @@ textarea.form-control {
     border-radius: var(--radius-lg);
     overflow: hidden;
     box-shadow: var(--shadow);
-    transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    transition: box-shadow var(--transition), border-color var(--transition);
     height: 100%;
 }
 
 .membership-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
-    border-color: #5a2c38;
+    box-shadow: var(--shadow);
+    border-color: var(--line);
 }
 
 .membership-card .card-body {
@@ -1236,7 +1229,7 @@ textarea.form-control {
 
 /* ─── Workouts Page ──────────────────────────────────────── */
 .workouts-page {
-    animation: riseIn 0.7s ease both;
+    opacity: 1;
 }
 
 .workout-plan-output {
@@ -1321,7 +1314,7 @@ footer {
 }
 
 .btn-close:hover {
-    opacity: 1;
+    opacity: 0.7;
 }
 
 /* Bootstrap 5 fallbacks */
@@ -1353,30 +1346,6 @@ footer {
 }
 
 /* ─── Animations ─────────────────────────────────────────── */
-@keyframes riseIn {
-    from {
-        opacity: 0;
-        transform: translateY(16px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadePop {
-    from {
-        opacity: 0;
-        transform: scale(0.96);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
 /* ─── Responsive ─────────────────────────────────────────── */
 @media (max-width: 991px) {
     .hero-section {

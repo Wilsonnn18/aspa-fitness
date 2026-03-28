@@ -32,9 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = 'Email already registered.';
             } else {
                 $hash = password_hash($password, PASSWORD_DEFAULT);
-                $role = 'user';
-                $stmt = $conn->prepare('INSERT INTO users (name,email,phone,password,role) VALUES (?,?,?,?,?)');
-                $stmt->bind_param('sssss', $name, $email, $phone, $hash, $role);
+                $stmt = $conn->prepare('INSERT INTO users (name,email,phone,password) VALUES (?,?,?,?)');
+                $stmt->bind_param('ssss', $name, $email, $phone, $hash);
                 if ($stmt->execute()) {
                     redirect('/auth/login.php');
                 }
@@ -66,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="email" name="email" class="form-control" placeholder="you@example.com" required>
             </div>
             <div class="form-group">
-                <label>Phone <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
+                <label>Phone</label>
                 <input type="text" name="phone" class="form-control" placeholder="+94 77 000 0000">
             </div>
             <div class="form-group">

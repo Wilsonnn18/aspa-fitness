@@ -32,9 +32,8 @@ if (($_POST['action'] ?? '') === 'add') {
             $exists = $check->get_result()->num_rows > 0;
 
             if (!$exists) {
-                $userRole = 'user';
-                $stmt = $conn->prepare('INSERT INTO users (name,email,phone,password,role) VALUES (?,?,?,?,?)');
-                $stmt->bind_param('sssss', $name, $email, $phone, $pass, $userRole);
+                $stmt = $conn->prepare('INSERT INTO users (name,email,phone,password) VALUES (?,?,?,?)');
+                $stmt->bind_param('ssss', $name, $email, $phone, $pass);
                 $stmt->execute();
                 $successMsg = 'User added successfully.';
             }
@@ -50,9 +49,10 @@ if ($deleteId > 0) {
 }
 
 $users = [];
-$res = $conn->query('SELECT id,name,email,phone,role,created_at FROM users ORDER BY id DESC');
+$res = $conn->query('SELECT id,name,email,phone,created_at FROM users ORDER BY id DESC');
 if ($res) {
     while ($row = $res->fetch_assoc()) {
+        $row['role'] = 'user';
         $users[] = $row;
     }
 }
@@ -112,7 +112,7 @@ if ($res) {
         <div class="card-header">All Users</div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
+                <table class="table mb-0">
                     <thead>
                         <tr>
                             <th>ID</th>

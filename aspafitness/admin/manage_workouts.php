@@ -8,13 +8,18 @@ if ($goalColumn && $goalColumn->num_rows === 0) {
     $conn->query("ALTER TABLE workout_plans ADD COLUMN goal ENUM('weight_loss','weight_gain','lean_muscle') DEFAULT 'weight_loss'");
 }
 
+$descriptionColumn = $conn->query("SHOW COLUMNS FROM workout_plans LIKE 'description'");
+if ($descriptionColumn && $descriptionColumn->num_rows === 0) {
+    $conn->query("ALTER TABLE workout_plans ADD COLUMN description TEXT NULL");
+}
+
 $success = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = (int)($_POST['id'] ?? 0);
     $title = trim($_POST['title'] ?? '');
-    $desc = trim($_POST['description'] ?? '');
     $level = $_POST['level'] ?? 'beginner';
     $goal = $_POST['goal'] ?? 'weight_loss';
+    $description = trim($_POST['description'] ?? '');
 
     $allowedLevels = ['beginner', 'intermediate', 'advanced'];
     $allowedGoals = ['weight_loss', 'weight_gain', 'lean_muscle'];
@@ -24,13 +29,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($title !== '') {
         if ($id > 0) {
-            $stmt = $conn->prepare('UPDATE workout_plans SET title = ?, description = ?, level = ?, goal = ? WHERE id = ?');
-            $stmt->bind_param('ssssi', $title, $desc, $level, $goal, $id);
+            $stmt = $conn->prepare('UPDATE workout_plans SET title = ?, level = ?, goal = ?, description = ? WHERE id = ?');
+            $stmt->bind_param('ssssi', $title, $level, $goal, $description, $id);
             $stmt->execute();
             $success = 'Workout plan updated.';
         } else {
-            $stmt = $conn->prepare('INSERT INTO workout_plans (title,description,level,goal) VALUES (?,?,?,?)');
-            $stmt->bind_param('ssss', $title, $desc, $level, $goal);
+            $stmt = $conn->prepare('INSERT INTO workout_plans (title,level,goal,description) VALUES (?,?,?,?)');
+            $stmt->bind_param('ssss', $title, $level, $goal, $description);
             $stmt->execute();
             $success = 'Workout plan created.';
         }
@@ -48,6 +53,12 @@ $plans = [];
 $res = $conn->query('SELECT * FROM workout_plans ORDER BY id DESC');
 if ($res) {
     while ($row = $res->fetch_assoc()) {
+        if (!array_key_exists('goal', $row)) {
+            $row['goal'] = 'weight_loss';
+        }
+        if (!array_key_exists('level', $row) || $row['level'] === null || $row['level'] === '') {
+            $row['level'] = 'beginner';
+        }
         $plans[] = $row;
     }
 }
@@ -96,7 +107,7 @@ if ($res) {
                 </div>
                 <div class="form-group">
                     <label class="form-label">Description</label>
-                    <textarea class="form-control" name="description" id="wp-desc" rows="4" placeholder="Workout plan details..."></textarea>
+                    <textarea class="form-control" name="description" id="wp-description" rows="4" placeholder="Workout plan details"></textarea>
                 </div>
                 <div class="d-flex gap-2">
                     <button class="btn btn-primary" type="submit">Save Plan</button>
@@ -120,6 +131,7 @@ if ($res) {
                                 <th>Title</th>
                                 <th>Level</th>
                                 <th>Goal</th>
+                                <th>Description</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -129,12 +141,13 @@ if ($res) {
                                 data-title="<?= htmlspecialchars($p['title'], ENT_QUOTES) ?>"
                                 data-level="<?= htmlspecialchars($p['level']) ?>"
                                 data-goal="<?= htmlspecialchars($p['goal']) ?>"
-                                data-desc="<?= htmlspecialchars($p['description'], ENT_QUOTES) ?>">
+                                data-description="<?= htmlspecialchars($p['description'] ?? '', ENT_QUOTES) ?>">
                                 <td><strong><?= htmlspecialchars($p['title']) ?></strong></td>
                                 <td>
                                     <span class="status-pill inactive"><?= ucfirst(htmlspecialchars($p['level'])) ?></span>
                                 </td>
                                 <td><?= htmlspecialchars(ucwords(str_replace('_', ' ', $p['goal']))) ?></td>
+                                <td><?= nl2br(htmlspecialchars(substr($p['description'] ?? '', 0, 120))) ?></td>
                                 <td>
                                     <a class="btn btn-sm btn-secondary edit-wp" href="#">Edit</a>
                                     <a class="btn btn-sm btn-danger" href="?delete=<?= $p['id'] ?>" onclick="return confirm('Delete this plan?');">Delete</a>
@@ -158,7 +171,7 @@ document.querySelectorAll('.edit-wp').forEach(function(el) {
         document.getElementById('wp-title').value = tr.dataset.title;
         document.getElementById('wp-level').value = tr.dataset.level;
         document.getElementById('wp-goal').value = tr.dataset.goal;
-        document.getElementById('wp-desc').value = tr.dataset.desc;
+        document.getElementById('wp-description').value = tr.dataset.description || '';
         document.getElementById('workout-form-heading').textContent = 'Edit Workout Plan';
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
@@ -166,6 +179,7 @@ document.querySelectorAll('.edit-wp').forEach(function(el) {
 
 document.getElementById('wp-reset-btn').addEventListener('click', function() {
     document.getElementById('wp-id').value = '';
+    document.getElementById('wp-description').value = '';
     document.getElementById('workout-form-heading').textContent = 'Add New Workout Plan';
 });
 </script>
